@@ -15,14 +15,8 @@ var storage = multer.diskStorage({
 });
 var uploadStore = multer({ storage: storage });
 
-var MongoClient = require('mongodb').MongoClient;
-var uri = "mongodb+srv://nghiatvh:nghia123456@cluster0.c0xty.mongodb.net/atn-shop?retryWrites=true&w=majority";
-var client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  var collection = client.db("atn-shop").collection("devices");
-  // perform actions on the collection object
-  client.close();
-});
+const dbname = 'atn-shop';
+const uri = 'mongodb+srv://nghiatvh:nghia123456@cluster0.c0xty.mongodb.net/atn-shop?retryWrites=true&w=majority' + dbname;
 
 /// --- Code CONTROLLERs
 router.use(function timeLog (req, res, next) {

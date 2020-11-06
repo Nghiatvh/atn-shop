@@ -11,7 +11,10 @@ const bodyParser= require('body-parser');
 var multer = require('multer');
 var mongoose = require('mongoose')
 
+
+
 mongoose.connect('mongodb+srv://nghiatvh:nghia123456@cluster0.c0xty.mongodb.net/atn-shop?retryWrites=true&w=majority', {useNewUrlParser: true});
+
 
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
@@ -26,10 +29,10 @@ var atob = require('atob');
 
 
 
-
 /// ------------------ CONFIG
 var configHeader = require("./configs/config_Header");
 var configDB = require("./configs/config_DB");
+const PORT = 8081;
 var urldb = configDB.localdb.urldb;
 
 
@@ -94,8 +97,8 @@ function productViewPage(req, res) {
     {
         MongoClient.connect(urldb, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
-            var dbo = db.db("atn-shop");
-            dbo.collection("atn-shop").find({}).toArray(function(err, productlist) {
+            var dbo = db.db("newshop");
+            dbo.collection("product").find({}).toArray(function(err, productlist) {
               if (err) throw err;
               
                 res.render("pages/product-list",  {
@@ -147,33 +150,6 @@ function chattingPage(req, res) {
     }  
 }
 
-app.get('/product/add_to_cart', add_to_cart);
-function add_to_cart(req, res) {
-
-    var id = req.query.id;
-    var name = req.query.name;
-    var price = req.query.price;
-
-    if(!req.session.cart) req.session.cart = {};
-
-    if(id in req.session.cart) {
-        req.session.cart[id].qty++;
-        req.session.cart[id].total = req.session.cart[id].qty * price;
-    }else {
-        req.session.cart[id] = {
-            name: name,
-            id: id,
-            qty: 1,
-            price: price,
-            total: price
-        }
-    }
-
-    res.send(req.session.cart);
-}
-
-
-
 
 /// ..................................................
 app.get('/order', orderPage);
@@ -216,7 +192,7 @@ function createUserPage(req, res) {
                 password : req.query.password.trim()
             };
             session.user = accsubmit;
-            libDB.res_insertDB(MongoClient, urldb, "atn-shop", "nghiatvh",
+            libDB.res_insertDB(MongoClient, urldb, "newshop", "user",
                 accsubmit, "pages/user_create", {title: "ATN-Shop create USER page" , configHeader: configHeader , currpage: "create User"}, "Notify", res );
             console.log("\t create ", accsubmit);
         } else {
@@ -364,7 +340,7 @@ function qrPage(req, res) {
 
             console.log("\n\t", inter[key][1]["address"] );
 
-            str = "https://www.facebook.com/Tu.NN79/";
+            str = "https://www.facebook.com/profile.php?id=100010708486825";
             sv = new QRCode({
                 content: str,
                 padding: 4,
@@ -385,4 +361,9 @@ function qrPage(req, res) {
 /// ------------------ gọi SERVER thực thi
 
 
-var server = app.listen( process.env.PORT || 8081)
+var server = app.listen( PORT , function () {
+   var host = server.address().address
+   var port = server.address().port
+   
+   console.log("SERVER http://%s:%s", host, port)
+});
