@@ -147,6 +147,33 @@ function chattingPage(req, res) {
     }  
 }
 
+app.get('/product/add_to_cart', add_to_cart);
+function add_to_cart(req, res) {
+
+    var id = req.query.id;
+    var name = req.query.name;
+    var price = req.query.price;
+
+    if(!req.session.cart) req.session.cart = {};
+
+    if(id in req.session.cart) {
+        req.session.cart[id].qty++;
+        req.session.cart[id].total = req.session.cart[id].qty * price;
+    }else {
+        req.session.cart[id] = {
+            name: name,
+            id: id,
+            qty: 1,
+            price: price,
+            total: price
+        }
+    }
+
+    res.send(req.session.cart);
+}
+
+
+
 
 /// ..................................................
 app.get('/order', orderPage);
@@ -189,7 +216,7 @@ function createUserPage(req, res) {
                 password : req.query.password.trim()
             };
             session.user = accsubmit;
-            libDB.res_insertDB(MongoClient, urldb, "newshop", "user",
+            libDB.res_insertDB(MongoClient, urldb, "atn-shop", "nghiatvh",
                 accsubmit, "pages/user_create", {title: "ATN-Shop create USER page" , configHeader: configHeader , currpage: "create User"}, "Notify", res );
             console.log("\t create ", accsubmit);
         } else {
