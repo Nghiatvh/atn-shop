@@ -55,6 +55,18 @@ app.set('view engine', 'ejs');
 /// ------------------ VAR - global
 var chattingLog = [];
 
+/// ------------------ ROUTer - ROUTing
+var adminControl = require('./controllers/admin');
+app.use('/admin', adminControl);
+
+var productControl = require('./controllers/product');
+app.use('/product', productControl);
+productControl.params = { configHeader: configHeader, configDB: configDB};
+
+var uploadControl = require('./controllers/upload');
+app.use('/upload', uploadControl);
+uploadControl.params = { configHeader: configHeader, configDB: configDB};
+// uploadControl.uploadStore = uploadStore;
 
 /// ------------------ Khai bao cac Control, hàm , ... 
 /// ..................................................
@@ -71,14 +83,14 @@ function homePage(req, res) {
 
 
 /// ..................................................
-app.get('/product', productViewPage);
+app.get('/product/view', productViewPage);
 function productViewPage(req, res) {
     
     if (session.user) 
     {
         MongoClient.connect(urldb, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
-            var dbo = db.db("ATN");
+            var dbo = db.db("newshop");
             dbo.collection("product").find({}).toArray(function(err, productlist) {
               if (err) throw err;
               
@@ -161,30 +173,7 @@ function orderPage(req, res) {
 
 }
 
-app.get('/product/add_to_cart', add_to_cart);
-function add_to_cart(req, res) {
 
-    var id = req.query.id;
-    var name = req.query.name;
-    var price = req.query.price;
-
-    if(!req.session.cart) req.session.cart = {};
-
-    if(id in req.session.cart) {
-        req.session.cart[id].qty++;
-        req.session.cart[id].total = req.session.cart[id].qty * price;
-    }else {
-        req.session.cart[id] = {
-            name: name,
-            id: id,
-            qty: 1,
-            price: price,
-            total: price
-        }
-    }
-
-    res.send(req.session.cart);
-}
 
 /// ..................................................
 app.get('/user/create', createUserPage);
@@ -296,7 +285,7 @@ function writeLog(dataw) {
     var wday = [ "CN", "T2", "T3", "T4", "T5", "T6", "T7"];
     var gd = today.getDay();
     
-    var strDate = "" + yyyy + "" + mm + "" + dd + "_" + wday[gd] + ".log";
+    var strDate = "" + yyyy + "_" + mm + "_" + dd + "_" + wday[gd] + ".log";
 
     var h = today.getHours();
     var m = today.getMinutes();
@@ -344,7 +333,7 @@ function qrPage(req, res) {
 
             console.log("\n\t", inter[key][1]["address"] );
 
-            str = "https://www.facebook.com/profile.php?id=100010708486825";
+            str = "https://www.facebook.com/Tu.NN79/";
             sv = new QRCode({
                 content: str,
                 padding: 4,
@@ -365,4 +354,4 @@ function qrPage(req, res) {
 /// ------------------ gọi SERVER thực thi
 
 
-var server = app.listen(process.env.PORT || 8081);
+var server = app.listen(process.env.PORT || 8081)
