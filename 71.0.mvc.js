@@ -9,6 +9,9 @@ var cookieParser = require('cookie-parser');
 var router = express.Router();
 const bodyParser= require('body-parser');
 var multer = require('multer');
+var mongoose = require('mongoose')
+
+mongoose.connect('mongodb+srv://nghiatvh:nghia123456@cluster0.c0xty.mongodb.net/atn-shop?retryWrites=true&w=majority', {useNewUrlParser: true});
 
 var mongodb = require('mongodb');
 var MongoClient = mongodb.MongoClient;
@@ -20,6 +23,7 @@ var fs = require('fs');
 var path = require('path');
 var QRCode = require("qrcode-svg");
 var atob = require('atob');
+
 
 
 
@@ -90,8 +94,8 @@ function productViewPage(req, res) {
     {
         MongoClient.connect(urldb, { useUnifiedTopology: true }, function(err, db) {
             if (err) throw err;
-            var dbo = db.db("newshop");
-            dbo.collection("product").find({}).toArray(function(err, productlist) {
+            var dbo = db.db("atn-shop");
+            dbo.collection("atn-shop").find({}).toArray(function(err, productlist) {
               if (err) throw err;
               
                 res.render("pages/product-list",  {
@@ -354,4 +358,4 @@ function qrPage(req, res) {
 /// ------------------ gọi SERVER thực thi
 
 
-var server = app.listen(process.env.PORT || 8081)
+var server = app.listen( process.env.PORT | 8081)
